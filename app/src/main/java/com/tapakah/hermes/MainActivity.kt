@@ -1,30 +1,17 @@
 package com.tapakah.hermes
 
-import android.app.Instrumentation
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.content.Intent
-import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
+import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
-import android.util.Log
-import android.view.KeyEvent
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
 import android.widget.Toast
-import androidx.annotation.RequiresApi
-import androidx.core.os.HandlerCompat.postDelayed
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
-import java.security.Key
-
 
 
 class MainActivity : AppCompatActivity() {
@@ -33,6 +20,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        var file = File(this.filesDir, "data_bal")
+        var uri = FileProvider.getUriForFile(this, "com.tapakah.fileprovider", file)
+        FileOutputStream(File(uri.path))
+
         var rvListeBluetooth = findViewById<RecyclerView>(R.id.rvListeBluetooth)
         var bt = BluetoothAdapter.getDefaultAdapter()
 
@@ -40,7 +31,7 @@ class MainActivity : AppCompatActivity() {
 
 
         if (bt == null) {
-            Toast.makeText(this,"Votre appareil n'est pas compatible avec le bluetooth", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Votre appareil n'est pas compatible avec le bluetooth", Toast.LENGTH_LONG).show()
         }
 
         if (!bt.isEnabled) {
@@ -66,6 +57,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun startService(btDevice: BluetoothDevice){
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+        val uri = Uri.parse(getExternalFilesDir("file/*").toString())
+        intent.setDataAndType(uri, "*/*")
+        startActivity(Intent.createChooser(intent, "Open folder"))
+
         Intent(this, MyService::class.java).also {
             it.putExtra("EXTRA_DEVICE", btDevice.address)
             startService(it)
