@@ -24,13 +24,13 @@
         <provider
             android:authorities="com.tapakah.fileprovider"
             android:name="androidx.core.content.FileProvider"
-            android:exported="true"
+            android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths"/>
         </provider>
-        <service android:name="com.tapakah.hermes.MyService"/>
+        <!--<service android:name="com.tapakah.hermes.MyService"/>-->
     </application>
 
 </manifest>
